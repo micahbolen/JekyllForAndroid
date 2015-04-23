@@ -29,14 +29,29 @@
             android:label="@string/action_newpost" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.activities.PostsListActivity" />
+                android:value=".activities.PostsListActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.PreviewMarkdownActivity"
             android:label="@string/title_activity_markdown" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.activities.EditPostActivity" />
+                android:value=".activities.EditPostActivity" />
         </activity>
         <activity android:name=".activities.SetPreferenceActivity" >
             <meta-data

@@ -20,6 +20,7 @@ public class MarkdownPreviewFragment extends Fragment {
     private static final String LOG_TAG = MarkdownPreviewFragment.class.getSimpleName();
 
     private String content = "";
+    private String imageUriString = "";
 
     Utility utility;
 
@@ -34,6 +35,7 @@ public class MarkdownPreviewFragment extends Fragment {
         if (getArguments() != null) {
             content = getArguments().getString(PreviewMarkdownActivity.POST_CONTENT).replace("{{ " +
                     "site.url }}", repo);
+            imageUriString = getArguments().getString(PreviewMarkdownActivity.PREVIEW_IMAGE_URI_STRING);
         }
 
 

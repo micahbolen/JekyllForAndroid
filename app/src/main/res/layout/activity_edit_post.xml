@@ -51,7 +51,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/subhead"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
 
         <EditText
             android:id="@+id/edit_content"
@@ -59,6 +60,13 @@
             android:layout_height="wrap_content"
             android:overScrollMode="always"
             android:text=""/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/preview_image"
+            android:layout_below="@+id/linearLayout"
+            android:layout_centerHorizontal="true" />
     </LinearLayout>
 
     <RelativeLayout

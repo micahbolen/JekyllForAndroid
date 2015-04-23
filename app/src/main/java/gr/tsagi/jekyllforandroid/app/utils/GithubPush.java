@@ -161,7 +161,7 @@ public class GithubPush {
                 commitResource.setUrl(newCommit.getUrl());
 
                 // get master reference and update it
-                Reference reference = dataService.getReference(repository, "heads/master");
+                Reference reference = dataService.getReference(repository, "heads/gh-pages");
                 reference.setObject(commitResource);
                 dataService.editReference(repository, reference, true);
 

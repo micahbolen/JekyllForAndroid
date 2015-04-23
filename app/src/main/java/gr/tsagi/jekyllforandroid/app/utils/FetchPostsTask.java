@@ -136,7 +136,7 @@ public class FetchPostsTask extends AsyncTask<String, Void, Void> {
             List<RepositoryBranch> branchList = repositoryService.getBranches(repository);
             for (int i = 0; i <= branchList.size(); i++) {
                 String name = branchList.get(i).getName();
-                if (name.equals("master")) {
+                if (name.equals("gh-pages")) {
                     baseCommitSha = repositoryService.getBranches(repository).get(i)
                             .getCommit()
                             .getSha();

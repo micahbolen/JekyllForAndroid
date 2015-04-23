@@ -54,6 +54,7 @@ public class JekyllRepo {
                     break;
                 }
             }
+            name = "humorouslysad";
             return name;
         }
 

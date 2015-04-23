@@ -33,15 +33,15 @@ import gr.tsagi.jekyllforandroid.app.utils.GetAccessToken;
 import gr.tsagi.jekyllforandroid.app.utils.JekyllRepo;
 
 public class LoginActivity extends BaseActivity {
-    private static String CLIENT_ID = "c93bd14e3c9671bd7dbf";
+    private static String CLIENT_ID = "cbf8e971595ebe16e890";
     //Use your own client id
-    private static String CLIENT_SECRET = "e1566daf8025707db0d5fefa146b965f3ad38086";
+    private static String CLIENT_SECRET = "a9b00bc082822bcd00cc2075fd2595ef00e16e9b";
     //Use your own client secret
     private static String REDIRECT_URI = "http://localhost";
     private static String GRANT_TYPE = "auth_code";
     private static String TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static String OAUTH_URL = "https://github.com/login/oauth/authorize";
-    private static String OAUTH_SCOPE = "user%2Crepo";
+    private static String OAUTH_SCOPE = "user%2Cpublic_repo";
     //Change the Scope as you need
     WebView web;
     ImageButton auth;
@@ -200,6 +200,7 @@ public class LoginActivity extends BaseActivity {
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("user_login", user);
             editor.putString("user_repo", repo);
+            editor.putBoolean("first_time", false);
             editor.commit();
 
             startActivity(new Intent(LoginActivity.this,

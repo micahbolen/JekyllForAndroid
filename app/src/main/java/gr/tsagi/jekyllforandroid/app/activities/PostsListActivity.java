@@ -49,6 +49,7 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
     String mUsername;
     String mToken;
     String mRepo;
+    Boolean mFirstTime;
     SharedPreferences settings;
 
     FetchPostsTask fetchPostsTask;
@@ -81,7 +82,7 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
         restorePreferences();
         DrawerSetup();
 
-        if (mToken.equals("")) {
+        if (mToken.equals("") || mFirstTime) {
             login();
         } else {
             updateList();
@@ -271,7 +272,7 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
      */
     private void selectItem(int position) {
 
-        Fragment fragment = null;
+        Fragment fragment;
         Bundle data = new Bundle();
         data.putInt(PostsListActivity.POST_STATUS, position);
 
@@ -279,6 +280,11 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
             case 0:
                 try {
                     fragment = new PostsListFragment();
+                    // Insert the fragment by replacing any existing fragment
+                    fragment.setArguments(data);
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame, fragment)
+                            .commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -286,6 +292,11 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
             case 1:
                 try {
                     fragment = new PostsListFragment();
+                    // Insert the fragment by replacing any existing fragment
+                    fragment.setArguments(data);
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame, fragment)
+                            .commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -293,19 +304,16 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
             case 2:
                 try {
                     fragment = new PrefsFragment();
+                    // Insert the fragment by replacing any existing fragment
+                    fragment.setArguments(data);
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame, fragment)
+                            .commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
         }
-
-        // Insert the fragment by replacing any existing fragment
-
-        assert fragment != null;
-        fragment.setArguments(data);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -385,7 +393,9 @@ public class PostsListActivity extends BaseActivity implements PostsListFragment
         mUsername = settings.getString("user_login", "");
         mToken = settings.getString("user_status", "");
         mRepo = settings.getString("user_repo", "");
-
+        //Todo: resolve GitHub auth/login issues
+        mFirstTime = settings.getBoolean("first_time", true);
+//        mFirstTime = true;
     }
 
     private void login() {
