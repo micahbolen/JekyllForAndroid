@@ -1,5 +1,6 @@
 package gr.tsagi.jekyllforandroid.app.activities;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -8,23 +9,34 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.BitmapRequestBuilder;
+import com.bumptech.glide.BitmapTypeRequest;
+import com.bumptech.glide.Glide;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,6 +70,8 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
     private EditText mTags;
     private EditText mCategory;
     private EditText mContent;
+    private ImageView mImageView;
+    private String imageBlobString;
 
     ImageButton publish;
 
@@ -84,11 +98,17 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
         String action = intent.getAction();
         String type = intent.getType();
 
+        mImageView = (ImageView) findViewById(R.id.preview_image);
+
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 handleSendText(intent); // Handle text being sent
             } else if (type.startsWith("image/")) {
-                handleSendImage(intent); // Handle single image being sent
+                try {
+                    handleSendImage(intent); // Handle single image being sent
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
             if (type.startsWith("image/")) {
@@ -110,7 +130,8 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
         mTitle = (EditText) findViewById(R.id.edit_title);
         mTags = (EditText) findViewById(R.id.edit_tags);
         mCategory = (EditText) findViewById(R.id.edit_category);
-        mContent = (EditText) findViewById(R.id.edit_content);
+
+
 
         publish = (ImageButton) findViewById(R.id.fab);
         publish.setOnClickListener(new View.OnClickListener() {
@@ -129,10 +150,20 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
         }
     }
 
-    void handleSendImage(Intent intent) {
+//    @TargetApi(Build.VERSION_CODES.KITKAT)
+    void handleSendImage(Intent intent) throws IOException {
         Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (imageUri != null) {
             // Update UI to reflect image being shared
+            Glide.with(this).load(imageUri).into(mImageView);
+
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+
+            // Convert bitmap to byte[]
+            ByteArrayOutputStream output = new ByteArrayOutputStream(bitmap.getByteCount());
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+            byte[] imageBytes = output.toByteArray();
+            imageBlobString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         }
     }
 
@@ -320,7 +351,7 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
         GithubPush pusher = new GithubPush(this);
 
         try {
-            pusher.pushContent(title, date, output + content);
+            pusher.pushContent(imageBlobString, title, date, output + content);
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -335,7 +366,7 @@ public class EditPostActivity extends BaseActivity implements LoaderManager.Load
         final String title = mTitle.getText().toString().trim();
         final String tags = mTags.getText().toString().trim();
         final String category = mCategory.getText().toString().trim();
-        final String content = mContent.getText().toString().trim();
+        final String content = "![";
 
         if (content.equals(""))
             Toast.makeText(this, R.string.editpost_empty, Toast.LENGTH_LONG).show();

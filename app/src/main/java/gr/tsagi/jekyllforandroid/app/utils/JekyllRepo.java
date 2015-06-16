@@ -17,16 +17,17 @@ public class JekyllRepo {
 
     public String getName(String user){
 
-        try{
-            return new CheckAllRepos().execute(user).get();
-        }catch (InterruptedException e) {
-
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+//        try{
+//            return new CheckAllRepos().execute(user).get();
+//        }catch (InterruptedException e) {
+//
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+        return "humorouslysad-jekyll";
     }
 
     private class CheckAllRepos extends AsyncTask<String, Void, String> {
@@ -54,7 +55,7 @@ public class JekyllRepo {
                     break;
                 }
             }
-            name = "humorouslysad";
+            name = "humorouslysad-jekyll";
             return name;
         }
 

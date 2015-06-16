@@ -72,7 +72,7 @@ public class Utility {
         SharedPreferences prefs = mContext.getSharedPreferences("gr.tsagi.jekyllforandroid",
                 Context.MODE_PRIVATE);
         // TODO: Change "user_repo" to "repo" without affecting current users
-        return prefs.getString("user_repo", "");
+        return "humorouslysad-jekyll";
     }
 
     /**

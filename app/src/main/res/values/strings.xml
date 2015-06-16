@@ -7,7 +7,7 @@
     <string name="action_logout">Logout</string>
     <string name="action_list">List Posts</string>
     <string name="title_activity_action">Humorously Sad Admin</string>
-    <string name="hint_title">Title</string>
+    <string name="hint_title">Caption</string>
     <string name="hint_category">Category</string>
     <string name="hint_tags">Tags (tag1, tag2, …)</string>
     <string name="hint_content">Post Content:</string>

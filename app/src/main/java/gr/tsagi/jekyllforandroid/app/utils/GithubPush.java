@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.bumptech.glide.request.FutureTarget;
+
 import org.eclipse.egit.github.core.Blob;
 import org.eclipse.egit.github.core.Commit;
 import org.eclipse.egit.github.core.CommitUser;
@@ -54,17 +56,27 @@ public class GithubPush {
         dir = sharedPref.getString("posts_subdir", "");
         if(!dir.equals(""))
             dir = dir +"/";
-        repo = settings.getString("user_repo", "");
+        repo = "humorouslysad-jekyll";
     }
 
-    public void pushContent(String title, String date, String content) throws
+    public void pushContent(String imageBlobString, String title, String date, String content) throws
             ExecutionException, InterruptedException {
         // set path
         String path = date + "-" + title.toLowerCase().replace(' ', '-')
                 .replace(",","").replace("!","").replace(".","") + ".md";
+
         path = "_posts/" + dir + path;
+
+        String imagePath = date + "-" + title.toLowerCase().replace(' ', '-')
+                .replace(",","").replace("!","").replace(".","") + ".jpg";
+
+        imagePath = "uploads/" + dir + imagePath;
+
+        content += title + "](" + imagePath + ")";
+
         String commitMessage = "Update/New Post from Jekyll for Android";
-        new PushFile().execute(content, path, commitMessage);
+
+        new PushFiles().execute(imageBlobString, imagePath, content, path, commitMessage);
 
     }
 
@@ -75,19 +87,21 @@ public class GithubPush {
                 .replace(",","").replace("!","").replace(".","") + ".md";
         path = "_drafts/" + dir + path;
         String commitMessage = "Update/New Draft from Jekyll for Android";
-        new PushFile().execute(content, path, commitMessage);
+        new PushFiles().execute(content, path, commitMessage);
 
     }
 
-    class PushFile extends AsyncTask<String,Void,String> {
+    class PushFiles extends AsyncTask<String,Void,String> {
 
         @Override
         protected String doInBackground(String... params) {
             try {
 
-                String blobContent = params[0];
-                String path = params[1];
-                String commitMessage = params[2];
+                String imageBlobString = params[0];
+                String imagePath = params[1];
+                String blobContent = params[2];
+                String path = params[3];
+                String commitMessage = params[4];
 
                 // based on http://swanson.github.com/blog/2011/07/23/digging-around-the-github-api-take-2.html
                 // initialize github client
@@ -115,6 +129,17 @@ public class GithubPush {
                 String blob_sha = dataService.createBlob(repository, blob);
                 Tree baseTree = dataService.getTree(repository, treeSha);
 
+                Blob imageBlob = new Blob();
+                imageBlob.setContent(imageBlobString).setEncoding(Blob.ENCODING_BASE64);
+                String imageBlob_sha = dataService.createBlob(repository, imageBlob);
+                TreeEntry imageTreeEntry = new TreeEntry();
+                imageTreeEntry.setPath(imagePath);
+                imageTreeEntry.setMode(imageTreeEntry.MODE_BLOB);
+                imageTreeEntry.setType(imageTreeEntry.TYPE_BLOB);
+                imageTreeEntry.setSha(imageBlob_sha);
+                imageTreeEntry.setSize(imageBlob.getContent().length());
+
+
                 // create new tree entry
                 TreeEntry treeEntry = new TreeEntry();
 
@@ -128,6 +153,7 @@ public class GithubPush {
                 treeEntry.setSize(blob.getContent().length());
                 Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
                 entries.add(treeEntry);
+                entries.add(imageTreeEntry);
                 Tree newTree = dataService.createTree(repository,
                         entries, baseTree.getSha());
 
